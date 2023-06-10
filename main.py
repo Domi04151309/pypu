@@ -55,11 +55,6 @@ def get_module_info(file_path, with_dependencies: bool = False):
         return SourceFile()
 
 
-def print_connections(source_file):
-    for source_import in source_file.imports:
-        print(source_file.name + ' ..> ' + source_import)
-
-
 def generate_uml(directory):
     source_files: list[SourceFile] = []
     for root, dirs, files in os.walk(directory):
@@ -74,7 +69,7 @@ def generate_uml(directory):
     for info in source_files:
         print(info)
     for info in source_files:
-        print_connections(info)
+        print(info.get_connection_strings())
     print('@enduml')
 
 
