@@ -17,6 +17,7 @@ class UMLFile:
             'skinparam classBackgroundColor white\n' + \
             'skinparam objectBackgroundColor white\n' + \
             'hide empty members\n' + \
+            'hide circle\n' + \
             '\n'.join([
                 str(source_file)
                 for source_file in self.source_files

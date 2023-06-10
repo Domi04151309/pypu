@@ -53,10 +53,5 @@ class SourceFile:
                 for variable in self.variables
             ]) + \
             '\n' + \
-            '\n'.join([
-                'hide ' + variable.name + ' circle'
-                for variable in self.variables
-            ]) + \
-            '\n' + \
             '\n'.join([str(source_class) for source_class in self.classes]) + \
             '\n}'

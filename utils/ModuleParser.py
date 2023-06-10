@@ -95,7 +95,8 @@ def get_module_info(file_path: str, with_dependencies: bool = False) -> SourceFi
                 if node.level == 1 or with_dependencies:
                     for node_name in node.names:
                         source_file.imports.append(
-                            '.'.join(path_modules[:-1]) + '.' + node.modname + '.' + node_name[0]
+                            ('.'.join(path_modules[:-1]) + '.' if node.level == 1 else '') +
+                            node.modname + '.' + node_name[0]
                         )
         return source_file
     except astroid.AstroidBuildingException:
