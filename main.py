@@ -21,14 +21,12 @@ def generate_uml(directory: str) -> str:
     return str(UMLFile(source_files))
 
 
-def print_uml(diagram: str) -> None:
-    print(diagram)
-    #print(encode(diagram, 'svg'))
-
-
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         print('Please provide a path to your project!', file=sys.stderr)
         sys.exit(1)
     uml: str = generate_uml(sys.argv[1])
-    print_uml(uml)
+    if len(sys.argv) > 2:
+        print(encode(uml, sys.argv[2]))
+    else:
+        print(uml)
