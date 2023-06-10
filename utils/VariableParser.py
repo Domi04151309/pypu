@@ -1,4 +1,4 @@
-def var_test(file_path):
+def prefilter_file(file_path: str) -> list[str]:
     with open(file_path, 'r') as file:
         lines: list[str] = []
         line: str = ''
@@ -52,62 +52,65 @@ def var_test(file_path):
                 line = ''
             else:
                 line += char
+        return lines
 
-        print(file_path)
-        class_indent = []
-        function_indent = 0
-        variables: list[str] = []
-        for line in lines:
-            # Empty line detection
-            if len(line) == 0:
-                continue
 
-            # Function detection
-            if function_indent > 0 and \
-                    len(line) - len(line.lstrip(' ')) <= function_indent and \
-                    not line.strip().startswith(')'):
-                function_indent = 0
-            if function_indent == 0 and 'def ' in line:
-                function_indent = len(line) - len(line.lstrip(' '))
+def get_variables(lines: list[str]) -> dict[str, str]:
+    class_indents = []
+    function_indent = 0
+    variables_with_types = {}
+    for line in lines:
+        # Detect irrelevant lines
+        if len(line) == 0 or not any(keyword in line for keyword in ['class ', 'def ', '=']):
+            continue
 
-            # Class Detection
-            if len(class_indent) > 0 and len(line) - len(line.lstrip(' ')) <= class_indent[-1][1] and \
-                    not line.strip().startswith(')'):
-                class_indent.pop()
-            if 'class ' in line:
-                class_indent.append((find_between(line, 'class ', ':'), len(line) - len(line.lstrip(' '))))
+        # Detect classes
+        if len(class_indents) > 0 and len(line) - len(line.lstrip(' ')) <= class_indents[-1][1] and \
+                not line.strip().startswith(')'):
+            class_indents.pop()
+        if 'class ' in line:
+            class_indents.append((find_between(line, 'class ', ':'), len(line) - len(line.lstrip(' '))))
 
-            # Relevant line detection
-            variable_definition = line.strip().split('=')[0]
-            if '=' in line and (function_indent == 0 or (function_indent > 0 and 'self.' in variable_definition)):
-                if 'if ' not in variable_definition and \
-                        '[' not in variable_definition and \
-                        '+' not in variable_definition and \
-                        '-' not in variable_definition and \
-                        '*' not in variable_definition and \
-                        '/' not in variable_definition and \
-                        ('.' not in variable_definition or 'self.' in variable_definition):
-                    if ',' in variable_definition:
-                        for part_variable in variable_definition.split(','):
-                            variable_string = part_variable.strip()
-                            if len(class_indent) > 0:
-                                variable_string = variable_string.replace('self.', class_indent[-1][0] + '.')
-                            variables.append(variable_string)
-                    else:
-                        variable_string = variable_definition.strip()
-                        if len(class_indent) > 0:
-                            variable_string = variable_string.replace('self.', class_indent[-1][0] + '.')
-                        variables.append(variable_string)
-        variables.sort()
-        variables_with_types = {}
-        for var in variables:
-            split_var = var.split(':')
-            if len(split_var) == 2:
-                variables_with_types[split_var[0].strip()] = split_var[1].strip()
-            elif split_var[0] not in variables_with_types:
-                variables_with_types[split_var[0].strip()] = 'Any'
-        for key, value in variables_with_types.items():
-            print('    ' + key + ': ' + value)
+        # Detect functions
+        if function_indent > 0 and \
+                len(line) - len(line.lstrip(' ')) <= function_indent and \
+                not line.strip().startswith(')'):
+            function_indent = 0
+        if function_indent == 0 and 'def ' in line:
+            function_indent = len(line) - len(line.lstrip(' '))
+
+        # Filter relevant assignments
+        definition_part = line.strip().split('=')[0]
+        if '=' in line and (function_indent == 0 or (function_indent > 0 and 'self.' in variable_definition)):
+            if 'if ' not in definition_part and \
+                    '[' not in definition_part and \
+                    '+' not in definition_part and \
+                    '-' not in definition_part and \
+                    '*' not in definition_part and \
+                    '/' not in definition_part and \
+                    ('.' not in definition_part or 'self.' in definition_part):
+                if ',' in definition_part:
+                    variable_definitions = definition_part.split(',')
+                else:
+                    variable_definitions = [definition_part]
+                for variable in variable_definitions:
+                    variable_string = variable.strip()
+                    if len(class_indents) > 0:
+                        variable_string = variable_string.replace('self.', class_indents[-1][0] + '.')
+                    split_var = variable_string.split(':')
+                    if len(split_var) == 2:
+                        variables_with_types[split_var[0].strip()] = split_var[1].strip()
+                    elif split_var[0] not in variables_with_types:
+                        variables_with_types[split_var[0].strip()] = 'Any'
+    return variables_with_types
+
+
+def var_test(file_path):
+    lines = prefilter_file(file_path)
+    variables = get_variables(lines)
+    print(file_path)
+    for key, value in variables.items():
+        print('    ' + key + ': ' + value)
 
 
 def find_between(s, first, last):
