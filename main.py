@@ -12,11 +12,13 @@ def generate_uml(directory):
         for file in files:
             if '.py' in file:
                 file_path: str = os.path.join(root, file)
-                if '__' not in file_path:
+                if 'venv' not in file_path and \
+                        '/.' not in file_path and \
+                        '__' not in file_path:
                     source_files.append(add_variable_information(file_path, get_module_info(file_path)))
     print(UMLFile(source_files))
 
 
 # Provide the directory path for listing files recursively
-directory_path = '../Stator_Analyzer/utils'
+directory_path = '../Stator_Analyzer'
 generate_uml(directory_path)
