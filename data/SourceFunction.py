@@ -10,8 +10,10 @@ class SourceFunction:
 
     def __str__(self) -> str:
         return ('{static}' if self.static else '') + \
+            '<color:DarkRed>' + \
             self.name + \
-            '(' + \
+            '</color>(' + \
             ', '.join([str(param) for param in self.params]) + \
-            ') -> ' + \
-            self.returns
+            ') → <color:MidnightBlue>' + \
+            self.returns + \
+            '</color>'

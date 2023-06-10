@@ -5,4 +5,4 @@ class SourceVariable:
 
     def __str__(self) -> str:
         return self.name + \
-            (': ' + self.type if self.type else '')
+            (': <color:MidnightBlue>' + self.type + '</color>' if self.type else '')

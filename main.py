@@ -7,7 +7,7 @@ from utils.PlantEncoder import encode
 from utils.VariableParser import add_variable_information
 
 
-def generate_uml(directory):
+def generate_uml(directory: str) -> str:
     source_files: list[SourceFile] = []
     for root, dirs, files in os.walk(directory):
         for file in files:
@@ -17,9 +17,15 @@ def generate_uml(directory):
                         '/.' not in file_path and \
                         '__' not in file_path:
                     source_files.append(add_variable_information(file_path, get_module_info(file_path)))
-    print(encode(str(UMLFile(source_files))))
+    return str(UMLFile(source_files))
+
+
+def print_uml(diagram: str) -> None:
+    print(diagram)
+    #print(encode(diagram, 'svg'))
 
 
 # Provide the directory path for listing files recursively
-directory_path = '../Stator_Analyzer'
-generate_uml(directory_path)
+directory_path: str = '../Stator_Analyzer'
+uml: str = generate_uml(directory_path)
+print_uml(uml)
