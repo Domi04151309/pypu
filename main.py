@@ -6,6 +6,16 @@ from utils.SourceClass import SourceClass
 from utils.SourceFunction import SourceFunction
 
 
+def annotation_to_string(node) -> str:
+    if isinstance(node, astroid.Name):
+        return node.name
+    elif isinstance(node, astroid.Subscript):
+        return node.value.name
+    elif isinstance(node, astroid.Const):
+        return str(node.value)
+    return 'Any'
+
+
 def get_module_info(file_path, with_dependencies: bool = False):
     try:
         module = astroid.MANAGER.ast_from_file(file_path)
@@ -19,16 +29,18 @@ def get_module_info(file_path, with_dependencies: bool = False):
                 for child_node in node.body:
                     if isinstance(child_node, astroid.FunctionDef):
                         new_function: SourceFunction = SourceFunction()
-                        new_function.name = node.name
-                        for arg in child_node.args.args:
-                            new_function.params.append(arg.name)
+                        new_function.name = child_node.name
+                        new_function.returns = annotation_to_string(child_node.returns)
+                        for i, arg in enumerate(child_node.args.args):
+                            new_function.params.append((arg.name, annotation_to_string(child_node.args.annotations[i])))
                         new_class.methods.append(new_function)
                 source_file.classes.append(new_class)
             elif isinstance(node, astroid.FunctionDef):
                 new_function: SourceFunction = SourceFunction()
                 new_function.name = node.name
-                for arg in node.args.args:
-                    new_function.params.append(arg.name)
+                new_function.returns = annotation_to_string(node.returns)
+                for i, arg in enumerate(node.args.args):
+                    new_function.params.append((arg.name, annotation_to_string(node.args.annotations[i])))
                 source_file.functions.append(new_function)
             elif isinstance(node, astroid.Import):
                 if with_dependencies:
@@ -46,30 +58,37 @@ def get_module_info(file_path, with_dependencies: bool = False):
 def print_module_info(source_file):
     print('package ' + source_file.name + ' {')
     if source_file.functions:
-        print('  object ' + source_file.name + 'Companion {')
         for function in source_file.functions:
-            print('    ' + function.name + '(' + ', '.join(function.params) + ')')
-        print('  }')
+            print('  object "' + function.name + '(' + ', '.join([param[0] + ': ' + param[1] for param in function.params]) + ') -> ' + function.returns + '" as ' + function.name)
     for source_class in source_file.classes:
         print('  class ' + source_class.name + ' {')
         if source_class.methods:
             for function in source_class.methods:
-                print('    ' + function.name + '(' + ', '.join(function.params) + ')')
+                print('    ' + function.name + '(' + ', '.join([param[0] + ': ' + param[1] for param in function.params]) + ') -> ' + function.returns)
         print('  }')
     print('}')
+
+
+def print_connections(source_file):
     for source_import in source_file.imports:
         print(source_file.name + ' ..> ' + source_import)
 
 
 def generate_uml(directory):
-    print('@startuml')
+    source_files: list[SourceFile] = []
     for root, dirs, files in os.walk(directory):
         for file in files:
             if '.py' in file:
-                file_path = os.path.join(root, file)
+                file_path: str = os.path.join(root, file)
                 if '__' not in file_path:
-                    info = get_module_info(file_path)
-                    print_module_info(info)
+                    source_files.append(get_module_info(file_path))
+
+    print('@startuml')
+    print('hide empty members')
+    for info in source_files:
+        print_module_info(info)
+    for info in source_files:
+        print_connections(info)
     print('@enduml')
 
 
