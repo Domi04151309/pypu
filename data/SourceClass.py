@@ -1,4 +1,4 @@
-from utils.SourceFunction import SourceFunction
+from data.SourceFunction import SourceFunction
 
 
 class SourceClass:

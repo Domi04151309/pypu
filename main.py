@@ -1,10 +1,10 @@
 import os
 import astroid
 
-from utils.SourceFile import SourceFile
-from utils.SourceClass import SourceClass
-from utils.SourceFunction import SourceFunction
-from utils.UMLFile import UMLFile
+from data.SourceFile import SourceFile
+from data.SourceClass import SourceClass
+from data.SourceFunction import SourceFunction
+from data.UMLFile import UMLFile
 from utils.VariableParser import var_test
 
 

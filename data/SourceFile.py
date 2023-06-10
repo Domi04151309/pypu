@@ -1,5 +1,5 @@
-from utils.SourceClass import SourceClass
-from utils.SourceFunction import SourceFunction
+from data.SourceClass import SourceClass
+from data.SourceFunction import SourceFunction
 
 
 class SourceFile:

@@ -1,4 +1,4 @@
-from utils.SourceFile import SourceFile
+from data.SourceFile import SourceFile
 
 
 class UMLFile:
