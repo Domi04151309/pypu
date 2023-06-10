@@ -33,8 +33,14 @@ def get_module_info(file_path, with_dependencies: bool = False):
                         new_function: SourceFunction = SourceFunction()
                         new_function.name = child_node.name
                         new_function.returns = annotation_to_string(child_node.returns)
+                        if child_node.decorators is not None:
+                            for decorator in child_node.decorators.nodes:
+                                if isinstance(decorator, astroid.Name) and decorator.name == 'staticmethod':
+                                    new_function.static = True
                         for i, arg in enumerate(child_node.args.args):
-                            new_function.params.append(SourceVariable(arg.name, annotation_to_string(child_node.args.annotations[i])))
+                            new_function.params.append(
+                                SourceVariable(arg.name, annotation_to_string(child_node.args.annotations[i]))
+                            )
                         new_class.methods.append(new_function)
                 source_file.classes.append(new_class)
             elif isinstance(node, astroid.FunctionDef):
