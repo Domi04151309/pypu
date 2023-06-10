@@ -17,22 +17,19 @@ def generate_uml(directory: str) -> str:
     """
     known_modules: list[str] = []
     source_files: list[SourceFile] = []
+    blacklist: list[str] = ['venv', '/.', '__']
     for root, _, files in os.walk(directory):
         for file in files:
             if '.py' in file:
                 file_path: str = os.path.join(root, file.split('.')[0])
-                if 'venv' not in file_path and \
-                        '/.' not in file_path and \
-                        '__' not in file_path:
+                if not any(item in file_path for item in blacklist):
                     known_modules.append('.'.join(file_path[(len(directory) + 1):].split(os.sep)))
 
     for root, _, files in os.walk(directory):
         for file in files:
             if '.py' in file:
                 file_path: str = os.path.join(root, file)
-                if 'venv' not in file_path and \
-                        '/.' not in file_path and \
-                        '__' not in file_path:
+                if not any(item in file_path for item in blacklist):
                     source_files.append(
                         add_variable_information(
                             file_path,
