@@ -9,6 +9,12 @@ from utils.VariableParser import add_variable_information
 
 
 def generate_uml(directory: str) -> str:
+    """
+    Generates a valid PlantUML string for all files in the given directory and its subdirectories.
+
+    :param directory: The directory to process.
+    :return: A valid PlantUML string.
+    """
     source_files: list[SourceFile] = []
     for root, _, files in os.walk(directory):
         for file in files:

@@ -3,6 +3,12 @@ from data.SourceVariable import SourceVariable
 
 
 def prefilter_file(file_path: str) -> list[str]:
+    """
+    Filters the input file by characters. Removes brackets, comments, and strings.
+
+    :param file_path: The path to the input file.
+    :return: A list of lines.
+    """
     with open(file_path, 'r', encoding='utf-8') as file:
         lines: list[str] = []
         line: str = ''
@@ -60,6 +66,12 @@ def prefilter_file(file_path: str) -> list[str]:
 
 
 def get_variables(lines: list[str]) -> list[SourceVariable]:
+    """
+    Gets variables from the provided lines.
+
+    :param lines: A file split into lines.
+    :return: A list of variables.
+    """
     class_indents: list[tuple[str, int]] = []
     function_indent: int = 0
     variables_with_types: dict[str, str] = {}
@@ -74,7 +86,7 @@ def get_variables(lines: list[str]) -> list[SourceVariable]:
             class_indents.pop()
         if 'class ' in line:
             class_indents.append(
-                (find_between(line, 'class ', ':'), len(line) - len(line.lstrip(' ')) + 1)
+                (substring_between(line, 'class ', ':'), len(line) - len(line.lstrip(' ')) + 1)
             )
 
         # Detect functions
@@ -117,6 +129,13 @@ def get_variables(lines: list[str]) -> list[SourceVariable]:
 
 
 def add_variable_information(path: str, source_file: SourceFile) -> SourceFile:
+    """
+    Adds variable information to a source file.
+
+    :param path: The path of the source file.
+    :param source_file: The initial source file.
+    :return: The modified source file.
+    """
     variables = get_variables(prefilter_file(path))
     for variable in variables:
         if '.' in variable.name:
@@ -128,10 +147,18 @@ def add_variable_information(path: str, source_file: SourceFile) -> SourceFile:
     return source_file
 
 
-def find_between(s: str, first: str, last: str) -> str:
+def substring_between(string: str, before: str, after: str) -> str:
+    """
+    Gets the string between two strings in a string.
+
+    :param string: The string to search in.
+    :param before: The string before.
+    :param after: The string after.
+    :return: The string between the strings.
+    """
     try:
-        start = s.index(first) + len(first)
-        end = s.index(last, start)
-        return s[start:end]
+        start = string.index(before) + len(before)
+        end = string.index(after, start)
+        return string[start:end]
     except ValueError:
         return ""

@@ -3,6 +3,10 @@ from data.SourceVariable import SourceVariable
 
 
 class SourceClass:
+    """
+    Data class representing a python class.
+    """
+
     def __init__(self) -> None:
         self.name: str = ''
         self.variables: list[SourceVariable] = []

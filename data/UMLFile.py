@@ -2,6 +2,10 @@ from data.SourceFile import SourceFile
 
 
 class UMLFile:
+    """
+    Data class representing a PlantUML file.
+    """
+
     def __init__(self, source_files: list[SourceFile]) -> None:
         self.source_files: list[SourceFile] = source_files
 

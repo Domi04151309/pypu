@@ -1,6 +1,6 @@
 import os
 import astroid
-from astroid import NodeNG
+from astroid import NodeNG, FunctionDef
 
 from data.SourceFile import SourceFile
 from data.SourceClass import SourceClass
@@ -9,6 +9,13 @@ from data.SourceVariable import SourceVariable
 
 
 def annotation_to_string(node: NodeNG | None, string: str = '') -> str:
+    """
+    Generates a type string from annotation nodes.
+
+    :param node: The root annotation node.
+    :param string: The parent string identifier for recursive parsing.
+    :return: A human-readable type string.
+    """
     return_value = ''
     if isinstance(node, astroid.Name):
         return_value = node.name
@@ -29,7 +36,41 @@ def annotation_to_string(node: NodeNG | None, string: str = '') -> str:
     return (string + '[' if string else '') + return_value + (']' if string else '')
 
 
+def get_function(node: FunctionDef) -> SourceFunction:
+    """
+    Generates a source function based on the input node.
+
+    :param node: The input node.
+    :return: A source function.
+    """
+    function: SourceFunction = SourceFunction()
+    function.name = node.name
+    function.returns = annotation_to_string(node.returns)
+    if node.decorators is not None:
+        for decorator in node.decorators.nodes:
+            if isinstance(decorator, astroid.Name) and \
+                    decorator.name == 'staticmethod':
+                function.static = True
+    for i, arg in enumerate(node.args.args):
+        function.params.append(
+            SourceVariable(
+                arg.name,
+                annotation_to_string(
+                    node.args.annotations[i]
+                )
+            )
+        )
+    return function
+
+
 def get_module_info(file_path: str, with_dependencies: bool = False) -> SourceFile:
+    """
+    Generates a source file based on the provided file path.
+
+    :param file_path: The file path for which to generate the source file.
+    :param with_dependencies: Whether external dependencies should be included.
+    :return: A matching source file.
+    """
     try:
         module = astroid.MANAGER.ast_from_file(file_path)
         path_modules = file_path.split('.')[-2].split(os.sep)
@@ -41,38 +82,11 @@ def get_module_info(file_path: str, with_dependencies: bool = False) -> SourceFi
                 new_class: SourceClass = SourceClass()
                 new_class.name = node.name
                 for child_node in node.body:
-                    if isinstance(child_node, astroid.FunctionDef):
-                        new_function: SourceFunction = SourceFunction()
-                        new_function.name = child_node.name
-                        new_function.returns = annotation_to_string(child_node.returns)
-                        if child_node.decorators is not None:
-                            for decorator in child_node.decorators.nodes:
-                                if isinstance(decorator, astroid.Name) and \
-                                        decorator.name == 'staticmethod':
-                                    new_function.static = True
-                        for i, arg in enumerate(child_node.args.args):
-                            new_function.params.append(
-                                SourceVariable(
-                                    arg.name,
-                                    annotation_to_string(
-                                        child_node.args.annotations[i]
-                                    )
-                                )
-                            )
-                        new_class.methods.append(new_function)
+                    if isinstance(child_node, FunctionDef):
+                        new_class.methods.append(get_function(child_node))
                 source_file.classes.append(new_class)
-            elif isinstance(node, astroid.FunctionDef):
-                new_function = SourceFunction()
-                new_function.name = node.name
-                new_function.returns = annotation_to_string(node.returns)
-                for i, arg in enumerate(node.args.args):
-                    new_function.params.append(
-                        SourceVariable(
-                            arg.name,
-                            annotation_to_string(node.args.annotations[i])
-                        )
-                    )
-                source_file.functions.append(new_function)
+            elif isinstance(node, FunctionDef):
+                source_file.functions.append(get_function(node))
             elif isinstance(node, astroid.Import):
                 if with_dependencies:
                     for node_name in node.names:

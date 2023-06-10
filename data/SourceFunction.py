@@ -2,6 +2,10 @@ from data.SourceVariable import SourceVariable
 
 
 class SourceFunction:
+    """
+    Data class representing a python function.
+    """
+
     def __init__(self) -> None:
         self.static = False
         self.name: str = ''

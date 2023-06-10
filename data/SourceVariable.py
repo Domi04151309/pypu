@@ -1,4 +1,8 @@
 class SourceVariable:
+    """
+    Data class representing a python variable.
+    """
+
     def __init__(self, name: str, data_type: str) -> None:
         self.name: str = name
         self.type: str = data_type
