@@ -1,4 +1,5 @@
 import os
+import sys
 
 from data.SourceFile import SourceFile
 from data.UMLFile import UMLFile
@@ -25,7 +26,9 @@ def print_uml(diagram: str) -> None:
     #print(encode(diagram, 'svg'))
 
 
-# Provide the directory path for listing files recursively
-directory_path: str = '../Stator_Analyzer'
-uml: str = generate_uml(directory_path)
-print_uml(uml)
+if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        print('Please provide a path to your project!', file=sys.stderr)
+        sys.exit(1)
+    uml: str = generate_uml(sys.argv[1])
+    print_uml(uml)

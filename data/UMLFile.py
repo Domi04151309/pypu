@@ -7,7 +7,10 @@ class UMLFile:
 
     def __str__(self) -> str:
         file: str = '@startuml\n' + \
+            'left to right direction\n' + \
             'skinparam packageStyle frame\n' + \
+            'skinparam packageBorderColor gray\n' + \
+            'skinparam classBackgroundColor white\n' + \
             'hide empty members\n' + \
             '\n'.join([str(source_file) for source_file in self.source_files]) + \
             '\n' + \

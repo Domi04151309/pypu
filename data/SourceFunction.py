@@ -14,6 +14,4 @@ class SourceFunction:
             self.name + \
             '</color>(' + \
             ', '.join([str(param) for param in self.params]) + \
-            ') → <color:MidnightBlue>' + \
-            self.returns + \
-            '</color>'
+            ')' + (' → <color:MidnightBlue>' + self.returns + '</color>' if self.returns else '')
