@@ -15,6 +15,7 @@ class UMLFile:
             'skinparam packageStyle frame\n' + \
             'skinparam packageBorderColor gray\n' + \
             'skinparam classBackgroundColor white\n' + \
+            'skinparam objectBackgroundColor white\n' + \
             'hide empty members\n' + \
             '\n'.join([
                 str(source_file)

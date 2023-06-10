@@ -40,7 +40,7 @@ To access the automatically generated documentation, please utilize the
 following command.
 
 ```bash
-pdoc main.py utils data --favicon https://www.kit.edu/img/intern/favicon.ico --logo https://upload.wikimedia.org/wikipedia/commons/3/3a/Logo_KIT.svg
+pdoc main.py utils data --favicon https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/code/default/48px.svg --logo https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/code/default/48px.svg
 ```
 
 ## Linting
