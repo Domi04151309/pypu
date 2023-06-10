@@ -55,7 +55,7 @@ def prefilter_file(file_path: str) -> list[str]:
         return lines
 
 
-def get_variables(lines: list[str]) -> dict[str, str]:
+def get_variables(lines: list[str]) -> list[tuple[str, str]]:
     class_indents = []
     function_indent = 0
     variables_with_types = {}
@@ -81,7 +81,7 @@ def get_variables(lines: list[str]) -> dict[str, str]:
 
         # Filter relevant assignments
         definition_part = line.strip().split('=')[0]
-        if '=' in line and (function_indent == 0 or (function_indent > 0 and 'self.' in variable_definition)):
+        if '=' in line and (function_indent == 0 or (function_indent > 0 and 'self.' in definition_part)):
             if 'if ' not in definition_part and \
                     '[' not in definition_part and \
                     '+' not in definition_part and \
@@ -102,14 +102,14 @@ def get_variables(lines: list[str]) -> dict[str, str]:
                         variables_with_types[split_var[0].strip()] = split_var[1].strip()
                     elif split_var[0] not in variables_with_types:
                         variables_with_types[split_var[0].strip()] = 'Any'
-    return variables_with_types
+    return list(variables_with_types.items())
 
 
 def var_test(file_path):
     lines = prefilter_file(file_path)
     variables = get_variables(lines)
     print(file_path)
-    for key, value in variables.items():
+    for key, value in variables:
         print('    ' + key + ': ' + value)
 
 
