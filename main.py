@@ -3,6 +3,7 @@ import os
 from data.SourceFile import SourceFile
 from data.UMLFile import UMLFile
 from utils.ModuleParser import get_module_info
+from utils.PlantEncoder import encode
 from utils.VariableParser import add_variable_information
 
 
@@ -16,7 +17,7 @@ def generate_uml(directory):
                         '/.' not in file_path and \
                         '__' not in file_path:
                     source_files.append(add_variable_information(file_path, get_module_info(file_path)))
-    print(UMLFile(source_files))
+    print(encode(str(UMLFile(source_files))))
 
 
 # Provide the directory path for listing files recursively

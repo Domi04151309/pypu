@@ -14,7 +14,7 @@ def annotation_to_string(node) -> str:
         return node.value.name
     elif isinstance(node, astroid.Const):
         return str(node.value)
-    return 'Any'
+    return ''
 
 
 def get_module_info(file_path, with_dependencies: bool = False):
