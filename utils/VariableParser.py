@@ -3,7 +3,7 @@ from data.SourceVariable import SourceVariable
 
 
 def prefilter_file(file_path: str) -> list[str]:
-    with open(file_path, 'r') as file:
+    with open(file_path, 'r', encoding='utf-8') as file:
         lines: list[str] = []
         line: str = ''
         multi_line_single_counter: int = 0
@@ -60,9 +60,9 @@ def prefilter_file(file_path: str) -> list[str]:
 
 
 def get_variables(lines: list[str]) -> list[SourceVariable]:
-    class_indents = []
-    function_indent = 0
-    variables_with_types = {}
+    class_indents: list[tuple[str, int]] = []
+    function_indent: int = 0
+    variables_with_types: dict[str, str] = {}
     for line in lines:
         # Detect irrelevant lines
         if len(line) == 0 or not any(keyword in line for keyword in ['class ', 'def ', '=']):
@@ -73,7 +73,9 @@ def get_variables(lines: list[str]) -> list[SourceVariable]:
                 not line.strip().startswith(')'):
             class_indents.pop()
         if 'class ' in line:
-            class_indents.append((find_between(line, 'class ', ':'), len(line) - len(line.lstrip(' ')) + 1))
+            class_indents.append(
+                (find_between(line, 'class ', ':'), len(line) - len(line.lstrip(' ')) + 1)
+            )
 
         # Detect functions
         if function_indent > 0 and \
@@ -85,7 +87,9 @@ def get_variables(lines: list[str]) -> list[SourceVariable]:
 
         # Filter relevant assignments
         definition_part = line.strip().split('=')[0]
-        if '=' in line and (function_indent == 0 or (function_indent > 0 and 'self.' in definition_part)):
+        if '=' in line and (function_indent == 0 or (
+                function_indent > 0 and 'self.' in definition_part
+        )):
             if 'if ' not in definition_part and \
                     '[' not in definition_part and \
                     '+' not in definition_part and \
@@ -100,7 +104,10 @@ def get_variables(lines: list[str]) -> list[SourceVariable]:
                 for variable in variable_definitions:
                     variable_string = variable.strip()
                     if len(class_indents) > 0:
-                        variable_string = variable_string.replace('self.', class_indents[-1][0] + '.')
+                        variable_string = variable_string.replace(
+                            'self.',
+                            class_indents[-1][0] + '.'
+                        )
                     split_var = variable_string.split(':')
                     if len(split_var) == 2:
                         variables_with_types[split_var[0].strip()] = split_var[1].strip()
@@ -121,7 +128,7 @@ def add_variable_information(path: str, source_file: SourceFile) -> SourceFile:
     return source_file
 
 
-def find_between(s, first, last):
+def find_between(s: str, first: str, last: str) -> str:
     try:
         start = s.index(first) + len(first)
         end = s.index(last, start)

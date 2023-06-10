@@ -1,0 +1,5 @@
+[MESSAGES CONTROL]
+# C0103: Naming convention violation
+# C0114: Missing module docstring
+# R0903: Too few public methods
+disable=C0103,C0114,R0903

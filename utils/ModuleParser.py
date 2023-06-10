@@ -29,7 +29,7 @@ def annotation_to_string(node: NodeNG | None, string: str = '') -> str:
     return (string + '[' if string else '') + return_value + (']' if string else '')
 
 
-def get_module_info(file_path, with_dependencies: bool = False):
+def get_module_info(file_path: str, with_dependencies: bool = False) -> SourceFile:
     try:
         module = astroid.MANAGER.ast_from_file(file_path)
         path_modules = file_path.split('.')[-2].split(os.sep)
@@ -47,20 +47,31 @@ def get_module_info(file_path, with_dependencies: bool = False):
                         new_function.returns = annotation_to_string(child_node.returns)
                         if child_node.decorators is not None:
                             for decorator in child_node.decorators.nodes:
-                                if isinstance(decorator, astroid.Name) and decorator.name == 'staticmethod':
+                                if isinstance(decorator, astroid.Name) and \
+                                        decorator.name == 'staticmethod':
                                     new_function.static = True
                         for i, arg in enumerate(child_node.args.args):
                             new_function.params.append(
-                                SourceVariable(arg.name, annotation_to_string(child_node.args.annotations[i]))
+                                SourceVariable(
+                                    arg.name,
+                                    annotation_to_string(
+                                        child_node.args.annotations[i]
+                                    )
+                                )
                             )
                         new_class.methods.append(new_function)
                 source_file.classes.append(new_class)
             elif isinstance(node, astroid.FunctionDef):
-                new_function: SourceFunction = SourceFunction()
+                new_function = SourceFunction()
                 new_function.name = node.name
                 new_function.returns = annotation_to_string(node.returns)
                 for i, arg in enumerate(node.args.args):
-                    new_function.params.append(SourceVariable(arg.name, annotation_to_string(node.args.annotations[i])))
+                    new_function.params.append(
+                        SourceVariable(
+                            arg.name,
+                            annotation_to_string(node.args.annotations[i])
+                        )
+                    )
                 source_file.functions.append(new_function)
             elif isinstance(node, astroid.Import):
                 if with_dependencies:

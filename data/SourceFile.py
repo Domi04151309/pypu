@@ -11,7 +11,10 @@ class SourceFile:
         self.functions: list[SourceFunction] = []
         self.classes: list[SourceClass] = []
 
-    def add_class_variable(self, source_class: str, variable: SourceVariable) -> None:
+    def add_class_variable(
+            self, source_class: str,
+            variable: SourceVariable
+    ) -> None:
         for class_item in self.classes:
             if class_item.name == source_class:
                 class_item.variables.append(variable)
@@ -24,11 +27,20 @@ class SourceFile:
         return 'package ' + \
             self.name + \
             ' {\n' + \
-            '\n'.join(['object "' + str(function) + '" as ' + function.name for function in self.functions]) + \
+            '\n'.join([
+                'object "' + str(function) + '" as ' + function.name
+                for function in self.functions
+            ]) + \
             '\n' + \
-            '\n'.join(['class "' + str(variable) + '" as ' + variable.name for variable in self.variables]) + \
+            '\n'.join([
+                'class "' + str(variable) + '" as ' + variable.name
+                for variable in self.variables
+            ]) + \
             '\n' + \
-            '\n'.join(['hide ' + variable.name + ' circle' for variable in self.variables]) + \
+            '\n'.join([
+                'hide ' + variable.name + ' circle'
+                for variable in self.variables
+            ]) + \
             '\n' + \
             '\n'.join([str(source_class) for source_class in self.classes]) + \
             '\n}'
