@@ -55,20 +55,6 @@ def get_module_info(file_path, with_dependencies: bool = False):
         return SourceFile()
 
 
-def print_module_info(source_file):
-    print('package ' + source_file.name + ' {')
-    if source_file.functions:
-        for function in source_file.functions:
-            print('  object "' + function.name + '(' + ', '.join([param[0] + ': ' + param[1] for param in function.params]) + ') -> ' + function.returns + '" as ' + function.name)
-    for source_class in source_file.classes:
-        print('  class ' + source_class.name + ' {')
-        if source_class.methods:
-            for function in source_class.methods:
-                print('    ' + function.name + '(' + ', '.join([param[0] + ': ' + param[1] for param in function.params]) + ') -> ' + function.returns)
-        print('  }')
-    print('}')
-
-
 def print_connections(source_file):
     for source_import in source_file.imports:
         print(source_file.name + ' ..> ' + source_import)
@@ -86,7 +72,7 @@ def generate_uml(directory):
     print('@startuml')
     print('hide empty members')
     for info in source_files:
-        print_module_info(info)
+        print(info)
     for info in source_files:
         print_connections(info)
     print('@enduml')
