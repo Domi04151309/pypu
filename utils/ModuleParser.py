@@ -1,5 +1,6 @@
 import os
 import astroid
+from astroid import NodeNG
 
 from data.SourceFile import SourceFile
 from data.SourceClass import SourceClass
@@ -7,14 +8,25 @@ from data.SourceFunction import SourceFunction
 from data.SourceVariable import SourceVariable
 
 
-def annotation_to_string(node) -> str:
+def annotation_to_string(node: NodeNG | None, string: str = '') -> str:
+    return_value = ''
     if isinstance(node, astroid.Name):
-        return node.name
-    elif isinstance(node, astroid.Subscript):
-        return node.value.name
+        return_value = node.name
+    elif isinstance(node, astroid.Subscript) and isinstance(node.value, astroid.Name):
+        if isinstance(node.slice, astroid.Tuple):
+            return_value = node.value.name + \
+                '[' + \
+                ', '.join([annotation_to_string(child_node) for child_node in node.slice.elts]) + \
+                ']'
+        elif isinstance(node.slice, astroid.Attribute):
+            return_value = annotation_to_string(node.slice, node.value.name)
+    elif isinstance(node, astroid.Attribute):
+        return_value = node.attrname
     elif isinstance(node, astroid.Const):
-        return str(node.value)
-    return ''
+        return_value = str(node.value)
+    elif isinstance(node, astroid.BinOp):
+        return_value = annotation_to_string(node.left) + ' | ' + annotation_to_string(node.right)
+    return (string + '[' if string else '') + return_value + (']' if string else '')
 
 
 def get_module_info(file_path, with_dependencies: bool = False):

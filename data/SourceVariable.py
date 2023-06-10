@@ -4,6 +4,5 @@ class SourceVariable:
         self.type: str = data_type
 
     def __str__(self) -> str:
-        return self.name +\
-            ': ' + \
-            self.type
+        return self.name + \
+            (': ' + self.type if self.type else '')
