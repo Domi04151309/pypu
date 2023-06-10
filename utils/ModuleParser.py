@@ -20,8 +20,9 @@ def annotation_to_string(node) -> str:
 def get_module_info(file_path, with_dependencies: bool = False):
     try:
         module = astroid.MANAGER.ast_from_file(file_path)
+        path_modules = file_path.split('.')[-2].split(os.sep)
         source_file = SourceFile()
-        source_file.name = file_path.split('.')[-2].split(os.sep)[-1]
+        source_file.name = '.'.join(path_modules)
 
         for node in module.body:
             if isinstance(node, astroid.ClassDef):
@@ -50,7 +51,9 @@ def get_module_info(file_path, with_dependencies: bool = False):
             elif isinstance(node, astroid.ImportFrom):
                 if node.level == 1 or with_dependencies:
                     for node_name in node.names:
-                        source_file.imports.append(node.modname + '.' + node_name[0])
+                        source_file.imports.append(
+                            '.'.join(path_modules[:-1]) + '.' + node.modname + '.' + node_name[0]
+                        )
         return source_file
     except astroid.AstroidBuildingException:
         return SourceFile()

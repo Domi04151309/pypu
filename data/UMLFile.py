@@ -9,6 +9,7 @@ class UMLFile:
         file: str = '@startuml\n' + \
             'hide empty members\n' + \
             '\n'.join([str(source_file) for source_file in self.source_files]) + \
+            '\n' + \
             '\n'.join([source_file.get_connection_strings() for source_file in self.source_files]) + \
             '\n@enduml'
         return '\n'.join([line for line in file.split('\n') if line.strip()])
