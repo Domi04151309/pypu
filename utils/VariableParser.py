@@ -121,14 +121,6 @@ def add_variable_information(path: str, source_file: SourceFile) -> SourceFile:
     return source_file
 
 
-def var_test(file_path):
-    lines = prefilter_file(file_path)
-    variables = get_variables(lines)
-    print(file_path)
-    for var in variables:
-        print('    ' + str(var))
-
-
 def find_between(s, first, last):
     try:
         start = s.index(first) + len(first)
