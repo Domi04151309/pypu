@@ -4,8 +4,9 @@ import astroid
 from data.SourceFile import SourceFile
 from data.SourceClass import SourceClass
 from data.SourceFunction import SourceFunction
+from data.SourceVariable import SourceVariable
 from data.UMLFile import UMLFile
-from utils.VariableParser import var_test
+from utils.VariableParser import var_test, add_variable_information
 
 
 def annotation_to_string(node) -> str:
@@ -34,7 +35,7 @@ def get_module_info(file_path, with_dependencies: bool = False):
                         new_function.name = child_node.name
                         new_function.returns = annotation_to_string(child_node.returns)
                         for i, arg in enumerate(child_node.args.args):
-                            new_function.params.append((arg.name, annotation_to_string(child_node.args.annotations[i])))
+                            new_function.params.append(SourceVariable(arg.name, annotation_to_string(child_node.args.annotations[i])))
                         new_class.methods.append(new_function)
                 source_file.classes.append(new_class)
             elif isinstance(node, astroid.FunctionDef):
@@ -42,7 +43,7 @@ def get_module_info(file_path, with_dependencies: bool = False):
                 new_function.name = node.name
                 new_function.returns = annotation_to_string(node.returns)
                 for i, arg in enumerate(node.args.args):
-                    new_function.params.append((arg.name, annotation_to_string(node.args.annotations[i])))
+                    new_function.params.append(SourceVariable(arg.name, annotation_to_string(node.args.annotations[i])))
                 source_file.functions.append(new_function)
             elif isinstance(node, astroid.Import):
                 if with_dependencies:
@@ -66,7 +67,7 @@ def generate_uml(directory):
                 if '__' not in file_path:
                     source_files.append(get_module_info(file_path))
                     var_test(file_path)
-    #print(UMLFile(source_files))
+    print(UMLFile(source_files))
 
 
 # Provide the directory path for listing files recursively
