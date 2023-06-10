@@ -1,0 +1,38 @@
+name: Code Checks
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  code-checks:
+    name: Code Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        cache: 'pip'
+    - name: Install
+      run: |
+        python3 -m pip install -U -r requirements.txt
+        mkdir lint
+    - name: PyLint
+      continue-on-error: true
+      run: pylint --recursive yes --ignore="__pycache__,venv,.mypy_cache" --output-format=text:lint/pylint.txt .
+    - name: MyPy
+      continue-on-error: true
+      run: mypy main.py --strict --any-exprs-report ./lint --lineprecision-report ./lint
+    - name: PDoc
+      run: pdoc main.py utils data --favicon https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/code/default/48px.svg --logo https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/code/default/48px.svg -o ./docs
+    - name: Upload Lint Results
+      uses: actions/upload-artifact@v3
+      with:
+        name: Lint
+        path: ./lint
+    - name: Upload PDoc
+      uses: actions/upload-artifact@v3
+      with:
+        name: PDoc
+        path: ./docs

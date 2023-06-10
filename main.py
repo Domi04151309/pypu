@@ -28,7 +28,7 @@ def generate_uml(directory: str) -> str:
     for root, _, files in os.walk(directory):
         for file in files:
             if '.py' in file:
-                file_path: str = os.path.join(root, file)
+                file_path = os.path.join(root, file)
                 if not any(item in file_path for item in blacklist):
                     source_files.append(
                         add_variable_information(

@@ -63,7 +63,11 @@ def get_function(node: FunctionDef) -> SourceFunction:
     return function
 
 
-def get_module_info(file_path: str, known_modules: list[str], with_dependencies: bool = False) -> SourceFile:
+def get_module_info(
+        file_path: str,
+        known_modules: list[str],
+        with_dependencies: bool = False
+) -> SourceFile:
     """
     Generates a source file based on the provided file path.
 
