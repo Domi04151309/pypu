@@ -4,6 +4,7 @@ import astroid
 from utils.SourceFile import SourceFile
 from utils.SourceClass import SourceClass
 from utils.SourceFunction import SourceFunction
+from utils.UMLFile import UMLFile
 
 
 def annotation_to_string(node) -> str:
@@ -64,13 +65,7 @@ def generate_uml(directory):
                 if '__' not in file_path:
                     source_files.append(get_module_info(file_path))
 
-    print('@startuml')
-    print('hide empty members')
-    for info in source_files:
-        print(info)
-    for info in source_files:
-        print(info.get_connection_strings())
-    print('@enduml')
+    print(UMLFile(source_files))
 
 
 # Provide the directory path for listing files recursively
