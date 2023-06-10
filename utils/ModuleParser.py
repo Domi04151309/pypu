@@ -63,11 +63,12 @@ def get_function(node: FunctionDef) -> SourceFunction:
     return function
 
 
-def get_module_info(file_path: str, with_dependencies: bool = False) -> SourceFile:
+def get_module_info(file_path: str, known_modules: list[str], with_dependencies: bool = False) -> SourceFile:
     """
     Generates a source file based on the provided file path.
 
     :param file_path: The file path for which to generate the source file.
+    :param known_modules: All known local modules.
     :param with_dependencies: Whether external dependencies should be included.
     :return: A matching source file.
     """
@@ -92,7 +93,7 @@ def get_module_info(file_path: str, with_dependencies: bool = False) -> SourceFi
                     for node_name in node.names:
                         source_file.imports.append(node_name[0])
             elif isinstance(node, astroid.ImportFrom):
-                if node.level == 1 or with_dependencies:
+                if node.level == 1 or node.modname in known_modules or with_dependencies:
                     for node_name in node.names:
                         source_file.imports.append(
                             ('.'.join(path_modules[:-1]) + '.' if node.level == 1 else '') +

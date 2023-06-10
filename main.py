@@ -15,7 +15,17 @@ def generate_uml(directory: str) -> str:
     :param directory: The directory to process.
     :return: A valid PlantUML string.
     """
+    known_modules: list[str] = []
     source_files: list[SourceFile] = []
+    for root, _, files in os.walk(directory):
+        for file in files:
+            if '.py' in file:
+                file_path: str = os.path.join(root, file.split('.')[0])
+                if 'venv' not in file_path and \
+                        '/.' not in file_path and \
+                        '__' not in file_path:
+                    known_modules.append('.'.join(file_path[(len(directory) + 1):].split(os.sep)))
+
     for root, _, files in os.walk(directory):
         for file in files:
             if '.py' in file:
@@ -26,7 +36,7 @@ def generate_uml(directory: str) -> str:
                     source_files.append(
                         add_variable_information(
                             file_path,
-                            get_module_info(file_path)
+                            get_module_info(file_path, known_modules)
                         )
                     )
     return str(UMLFile(source_files))
