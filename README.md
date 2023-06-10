@@ -1,6 +1,5 @@
 # PyPu
 
-
 PyPu is a lightweight Python script designed to facilitate the generation of PlantUML 
 diagrams from Python source code.
 
@@ -42,6 +41,10 @@ following command.
 ```bash
 pdoc main.py utils data --favicon https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/code/default/48px.svg --logo https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/code/default/48px.svg
 ```
+
+### Class Diagrams
+
+![Diagram](example.svg?raw=true)
 
 ## Linting
 
