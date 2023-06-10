@@ -1,74 +1,78 @@
 import os
 import astroid
 
+from utils.SourceFile import SourceFile
+from utils.SourceClass import SourceClass
+from utils.SourceFunction import SourceFunction
 
-def get_module_info(file_path):
+
+def get_module_info(file_path, with_dependencies: bool = False):
     try:
         module = astroid.MANAGER.ast_from_file(file_path)
-        classes = {}
-        global_functions = []
+        source_file = SourceFile()
+        source_file.name = file_path.split('.')[-2].split(os.sep)[-1]
 
         for node in module.body:
             if isinstance(node, astroid.ClassDef):
-                class_name = node.name
-                class_functions = []
-
+                new_class: SourceClass = SourceClass()
+                new_class.name = node.name
                 for child_node in node.body:
                     if isinstance(child_node, astroid.FunctionDef):
-                        function_name = child_node.name
-                        args = []
-
+                        new_function: SourceFunction = SourceFunction()
+                        new_function.name = node.name
                         for arg in child_node.args.args:
-                            args.append(arg.name)
-
-                        class_functions.append((function_name, args))
-
-                classes[class_name] = class_functions
+                            new_function.params.append(arg.name)
+                        new_class.methods.append(new_function)
+                source_file.classes.append(new_class)
             elif isinstance(node, astroid.FunctionDef):
-                function_name = node.name
-                args = []
-
+                new_function: SourceFunction = SourceFunction()
+                new_function.name = node.name
                 for arg in node.args.args:
-                    args.append(arg.name)
-
-                global_functions.append((function_name, args))
+                    new_function.params.append(arg.name)
+                source_file.functions.append(new_function)
             elif isinstance(node, astroid.Import):
-                for node_name in node.names:
-                    print('Dummy --> ' + node_name[0])
+                if with_dependencies:
+                    for node_name in node.names:
+                        source_file.imports.append(node_name[0])
             elif isinstance(node, astroid.ImportFrom):
-                for node_name in node.names:
-                    print('Dummy --> ' + node.modname + '.' + node_name[0])
-
-        file_name_parts = file_path.split('.')[1].split(os.sep)
-        print(f"package {'.'.join(file_name_parts)} {'{'}")
-        if global_functions:
-            print(f"  object {file_name_parts[-1]}Companion {'{'}")
-            for function_name, args in global_functions:
-                print(f"    {function_name}({', '.join(args)})")
-            print("  }")
-        for class_name, functions in classes.items():
-            print(f"  class {class_name} {'{'}")
-            if functions:
-                for function_name, args in functions:
-                    print(f"    {function_name}({', '.join(args)})")
-            print("  }")
-        print("}")
-
+                if node.level == 1 or with_dependencies:
+                    for node_name in node.names:
+                        source_file.imports.append(node.modname + '.' + node_name[0])
+        return source_file
     except astroid.AstroidBuildingException:
-        print(f"Failed to import module: {file_path}")
+        return SourceFile()
 
-def list_files(directory):
+
+def print_module_info(source_file):
+    print('package ' + source_file.name + ' {')
+    if source_file.functions:
+        print('  object ' + source_file.name + 'Companion {')
+        for function in source_file.functions:
+            print('    ' + function.name + '(' + ', '.join(function.params) + ')')
+        print('  }')
+    for source_class in source_file.classes:
+        print('  class ' + source_class.name + ' {')
+        if source_class.methods:
+            for function in source_class.methods:
+                print('    ' + function.name + '(' + ', '.join(function.params) + ')')
+        print('  }')
+    print('}')
+    for source_import in source_file.imports:
+        print(source_file.name + ' ..> ' + source_import)
+
+
+def generate_uml(directory):
+    print('@startuml')
     for root, dirs, files in os.walk(directory):
         for file in files:
             if '.py' in file:
                 file_path = os.path.join(root, file)
                 if '__' not in file_path:
-                    get_module_info(file_path)
+                    info = get_module_info(file_path)
+                    print_module_info(info)
+    print('@enduml')
 
 
 # Provide the directory path for listing files recursively
-directory_path = "../Stator_Analyzer/utils"
-
-print("@startuml")
-list_files(directory_path)
-print("@enduml")
+directory_path = '../Stator_Analyzer/utils'
+generate_uml(directory_path)
