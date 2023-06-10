@@ -1,3 +1,7 @@
+from data.SourceFile import SourceFile
+from data.SourceVariable import SourceVariable
+
+
 def prefilter_file(file_path: str) -> list[str]:
     with open(file_path, 'r') as file:
         lines: list[str] = []
@@ -8,7 +12,7 @@ def prefilter_file(file_path: str) -> list[str]:
         is_in_multi_line_string: bool = False
         is_in_comment: bool = False
         while 1:
-            #TODO: detect single-line strings
+            # TODO: detect single-line strings
 
             # Read next character
             char = file.read(1)
@@ -55,7 +59,7 @@ def prefilter_file(file_path: str) -> list[str]:
         return lines
 
 
-def get_variables(lines: list[str]) -> list[tuple[str, str]]:
+def get_variables(lines: list[str]) -> list[SourceVariable]:
     class_indents = []
     function_indent = 0
     variables_with_types = {}
@@ -102,15 +106,27 @@ def get_variables(lines: list[str]) -> list[tuple[str, str]]:
                         variables_with_types[split_var[0].strip()] = split_var[1].strip()
                     elif split_var[0] not in variables_with_types:
                         variables_with_types[split_var[0].strip()] = 'Any'
-    return list(variables_with_types.items())
+    return [SourceVariable(key, value) for key, value in variables_with_types.items()]
+
+
+def add_variable_information(path: str, source_file: SourceFile) -> SourceFile:
+    variables = get_variables(prefilter_file(path))
+    for variable in variables:
+        if '.' in variable.name:
+            variable_name = variable.name.split('.')
+            variable.name = variable_name[1]
+            source_file.add_class_variable(variable_name[0], variable)
+        else:
+            source_file.variables.append(variable)
+    return source_file
 
 
 def var_test(file_path):
     lines = prefilter_file(file_path)
     variables = get_variables(lines)
     print(file_path)
-    for key, value in variables:
-        print('    ' + key + ': ' + value)
+    for var in variables:
+        print('    ' + str(var))
 
 
 def find_between(s, first, last):

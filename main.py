@@ -65,8 +65,7 @@ def generate_uml(directory):
             if '.py' in file:
                 file_path: str = os.path.join(root, file)
                 if '__' not in file_path:
-                    source_files.append(get_module_info(file_path))
-                    var_test(file_path)
+                    source_files.append(add_variable_information(file_path, get_module_info(file_path)))
     print(UMLFile(source_files))
 
 
