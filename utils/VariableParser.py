@@ -69,19 +69,19 @@ def get_variables(lines: list[str]) -> list[SourceVariable]:
             continue
 
         # Detect classes
-        if len(class_indents) > 0 and len(line) - len(line.lstrip(' ')) <= class_indents[-1][1] and \
+        if len(class_indents) > 0 and len(line) - len(line.lstrip(' ')) < class_indents[-1][1] and \
                 not line.strip().startswith(')'):
             class_indents.pop()
         if 'class ' in line:
-            class_indents.append((find_between(line, 'class ', ':'), len(line) - len(line.lstrip(' '))))
+            class_indents.append((find_between(line, 'class ', ':'), len(line) - len(line.lstrip(' ')) + 1))
 
         # Detect functions
         if function_indent > 0 and \
-                len(line) - len(line.lstrip(' ')) <= function_indent and \
+                len(line) - len(line.lstrip(' ')) < function_indent and \
                 not line.strip().startswith(')'):
             function_indent = 0
         if function_indent == 0 and 'def ' in line:
-            function_indent = len(line) - len(line.lstrip(' '))
+            function_indent = len(line) - len(line.lstrip(' ')) + 1
 
         # Filter relevant assignments
         definition_part = line.strip().split('=')[0]
