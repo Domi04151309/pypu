@@ -1,6 +1,7 @@
 from data.SourceClass import SourceClass
 from data.SourceFunction import SourceFunction
 from data.SourceVariable import SourceVariable
+from utils.PackageTools import get_matching_module
 
 
 class SourceFile:
@@ -15,13 +16,26 @@ class SourceFile:
         self.functions: list[SourceFunction] = []
         self.classes: list[SourceClass] = []
 
-    def get_connection_strings(self) -> str:
+    def get_connection_strings(self, modules: list[str]) -> str:
         """
         Generates a valid PlantUML string for class associations.
 
+        :param modules: A list of known modules.
         :return: A string describing associations between classes.
         """
-        return '\n'.join([self.name + ' ..> ' + source_import for source_import in self.imports])
+        dependencies: list[str] = []
+        imports: list[str] = self.imports
+        # noinspection PyTypeChecker
+        for item in self.variables + self.functions + self.classes:
+            source_package = self.name + '.' + item.name + ' o--> '
+            for dependency in item.get_dependencies():
+                matching_module: str | None = get_matching_module(modules, dependency)
+                if matching_module:
+                    dependencies.append(source_package + matching_module)
+                    if matching_module in imports:
+                        imports.remove(matching_module)
+        return '\n'.join(dependencies +
+                         [self.name + ' ..> ' + source_import for source_import in imports])
 
     def __str__(self) -> str:
         return 'package ' + \
