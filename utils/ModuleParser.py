@@ -93,7 +93,6 @@ def get_module_info(
                         for child_child_node in child_node.body:
                             if isinstance(child_child_node, astroid.AnnAssign) and \
                                     isinstance(child_child_node.target, astroid.AssignAttr):
-                                print(child_child_node.target)
                                 new_class.variables.append(
                                     SourceVariable(
                                         child_child_node.target.attrname,
@@ -105,7 +104,8 @@ def get_module_info(
                         new_class.variables.append(
                             SourceVariable(
                                 child_node.target.name,
-                                annotation_to_string(child_node.annotation)
+                                annotation_to_string(child_node.annotation),
+                                True
                             )
                         )
                 source_file.classes.append(new_class)
