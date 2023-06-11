@@ -1,5 +1,8 @@
+import argparse
 import os
 import sys
+
+import requests
 
 from data.SourceFile import SourceFile
 from data.UMLFile import UMLFile
@@ -38,11 +41,18 @@ def generate_uml(directory: str) -> str:
 
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        print('Please provide a path to your project!', file=sys.stderr)
-        sys.exit(1)
-    uml: str = generate_uml(sys.argv[1])
-    if len(sys.argv) > 2:
-        print(encode(uml, sys.argv[2]))
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-m', '--module', help='the module to analyze', required=True)
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('-l', '--link', help='returns a link to the diagram in the specified format')
+    group.add_argument('-f', '--format', help='returns the diagram in the specified format')
+    args = parser.parse_args()
+
+    uml: str = generate_uml(args.module)
+    if args.link:
+        print(encode(uml, args.link))
+    elif args.format:
+        result = requests.get(encode(uml, args.format), allow_redirects=True).content
+        sys.stdout.buffer.write(result)
     else:
         print(uml)
