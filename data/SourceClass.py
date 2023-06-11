@@ -15,23 +15,24 @@ class SourceClass:
     def __str__(self) -> str:
         self.variables.sort(key=lambda x: x.name)
         self.methods.sort(key=lambda x: x.name)
-        static_variables = [
+        static_variables = '\n'.join([
             '+ ' + str(variable) for variable in self.variables if variable.static
-        ]
-        instance_variables = [
+        ])
+        instance_variables = '\n'.join([
             '+ ' + str(variable) for variable in self.variables if not variable.static
-        ]
-        static_methods = [
+        ])
+        static_methods = '\n'.join([
             '+ ' + str(method) for method in self.methods if method.static
-        ]
-        instance_methods = [
+        ])
+        instance_methods = '\n'.join([
             '+ ' + str(method) for method in self.methods if not method.static
-        ]
+        ])
         return 'class ' + \
             self.name + \
             ' {\n' + \
-            ('\n'.join(static_variables) + '\n__\n' if static_variables else '') + \
-            ('\n'.join(instance_variables) + '\n__\n' if instance_variables else '') + \
-            ('\n'.join(static_methods) + '\n__\n' if static_methods else '') + \
-            '\n'.join(instance_methods) + \
+            '\n__\n'.join([
+                x
+                for x in [static_variables, instance_variables, static_methods, instance_methods]
+                if x
+            ]) + \
             '\n}'
