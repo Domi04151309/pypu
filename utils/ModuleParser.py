@@ -65,6 +65,7 @@ def get_function(node: FunctionDef) -> SourceFunction:
 
 
 def get_module_info(
+        root: str,
         file_path: str,
         known_modules: list[str],
         with_dependencies: bool = False
@@ -72,6 +73,7 @@ def get_module_info(
     """
     Generates a source file based on the provided file path.
 
+    :param root: The root path of the analysis.
     :param file_path: The file path for which to generate the source file.
     :param known_modules: All known local modules.
     :param with_dependencies: Whether external dependencies should be included.
@@ -79,7 +81,7 @@ def get_module_info(
     """
     try:
         module = astroid.MANAGER.ast_from_file(file_path)
-        path_modules = file_path.split('.')[-2].split(os.sep)
+        path_modules = file_path[len(root):].split('.')[-2].split(os.sep)
         source_file = SourceFile()
         source_file.name = '.'.join(path_modules)
 

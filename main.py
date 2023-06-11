@@ -22,7 +22,9 @@ def generate_uml(directory: str) -> str:
             if '.py' in file:
                 file_path: str = os.path.join(root, file.split('.')[0])
                 if not any(item in file_path for item in blacklist):
-                    known_modules.append('.'.join(file_path[(len(directory) + 1):].split(os.sep)))
+                    known_modules.append('.'.join([
+                        x for x in file_path[len(directory):].split(os.sep) if x
+                    ]))
 
     for root, _, files in os.walk(directory):
         for file in files:
@@ -30,7 +32,7 @@ def generate_uml(directory: str) -> str:
                 file_path = os.path.join(root, file)
                 if not any(item in file_path for item in blacklist):
                     source_files.append(
-                        get_module_info(file_path, known_modules)
+                        get_module_info(directory, file_path, known_modules)
                     )
     return str(UMLFile(source_files))
 
