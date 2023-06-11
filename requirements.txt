@@ -1,5 +1,6 @@
 astroid
 requests
+types-requests
 mypy
 pylint
 pdoc

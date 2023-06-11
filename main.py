@@ -52,7 +52,8 @@ if __name__ == '__main__':
     if args.link:
         print(encode(uml, args.link))
     elif args.format:
-        result = requests.get(encode(uml, args.format), allow_redirects=True).content
-        sys.stdout.buffer.write(result)
+        result = requests.get(encode(uml, args.format), timeout=3, allow_redirects=False)
+        if result.status_code == 200:
+            sys.stdout.buffer.write(result.content)
     else:
         print(uml)
