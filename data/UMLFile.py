@@ -9,19 +9,6 @@ class UMLFile:
     def __init__(self, source_files: list[SourceFile]) -> None:
         self.source_files: list[SourceFile] = source_files
 
-    def get_known_modules(self) -> list[str]:
-        """
-        Generates a list of valid modules.
-
-        :return: A list of valid modules
-        """
-        packages = []
-        for file in self.source_files:
-            # noinspection PyTypeChecker
-            for item in file.variables + file.functions + file.classes:
-                packages.append(file.name + '.' + item.name)
-        return packages
-
     def __str__(self) -> str:
         file: str = '@startuml\n' + \
             'left to right direction\n' + \
@@ -37,7 +24,7 @@ class UMLFile:
             ]) + \
             '\n' + \
             '\n'.join([
-                source_file.get_connection_strings(self.get_known_modules())
+                source_file.get_connection_strings()
                 for source_file in self.source_files
             ]) + \
             '\n@enduml'

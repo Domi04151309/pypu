@@ -16,11 +16,10 @@ class SourceFile:
         self.functions: list[SourceFunction] = []
         self.classes: list[SourceClass] = []
 
-    def get_connection_strings(self, modules: list[str]) -> str:
+    def get_connection_strings(self) -> str:
         """
         Generates a valid PlantUML string for class associations.
 
-        :param modules: A list of known modules.
         :return: A string describing associations between classes.
         """
         dependencies: list[str] = []
@@ -29,7 +28,7 @@ class SourceFile:
         for item in self.variables + self.functions + self.classes:
             source_package = self.name + '.' + item.name + ' o--> '
             for dependency in item.get_dependencies():
-                matching_module: str | None = get_matching_module(modules, dependency)
+                matching_module: str | None = get_matching_module(self.imports, dependency)
                 if matching_module:
                     dependencies.append(source_package + matching_module)
                     if matching_module in imports:
