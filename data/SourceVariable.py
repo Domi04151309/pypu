@@ -1,4 +1,4 @@
-from data.SourceType import SourceType
+from .SourceType import SourceType
 
 
 class SourceVariable:

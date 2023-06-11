@@ -1,5 +1,5 @@
-from data.SourceFunction import SourceFunction
-from data.SourceVariable import SourceVariable
+from .SourceFunction import SourceFunction
+from .SourceVariable import SourceVariable
 
 
 class SourceClass:

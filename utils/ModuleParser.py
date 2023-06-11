@@ -30,7 +30,7 @@ def annotation_to_string(node: NodeNG | None) -> SourceType:
                 type_set.update(inner_annotation.dependencies)
             string_annotation = string_annotation[:-2]
             string_annotation += ']'
-        elif isinstance(node.slice, astroid.Attribute):
+        elif isinstance(node.slice, astroid.Attribute) or isinstance(node.slice, astroid.Name):
             inner_annotation = annotation_to_string(node.slice)
             string_annotation = node.value.name + '[' + str(inner_annotation) + ']'
             type_set.update(inner_annotation.dependencies)
