@@ -1,14 +1,25 @@
+from data.SourceType import SourceType
+
+
 class SourceVariable:
     """
     Data class representing a python variable.
     """
 
-    def __init__(self, name: str, data_type: str, static: bool = False) -> None:
-        self.static = static
+    def __init__(self, name: str, data_type: SourceType, static: bool = False) -> None:
+        self.static: bool = static
         self.name: str = name
-        self.type: str = data_type
+        self.type: SourceType = data_type
+
+    def get_dependencies(self) -> set[str]:
+        """
+        Generates a list of dependencies.
+
+        :return: All dependencies of the variable.
+        """
+        return self.type.dependencies
 
     def __str__(self) -> str:
         return ('{static}' if self.static else '') + \
             self.name + \
-            (': <color:MidnightBlue>' + self.type + '</color>' if self.type else '')
+            (': <color:MidnightBlue>' + str(self.type) + '</color>' if str(self.type) else '')

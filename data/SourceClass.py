@@ -12,6 +12,16 @@ class SourceClass:
         self.variables: list[SourceVariable] = []
         self.methods: list[SourceFunction] = []
 
+    def get_dependencies(self) -> set[str]:
+        """
+        Generates a list of dependencies.
+
+        :return: All dependencies of the class.
+        """
+        return {inner for outer in self.variables for inner in outer.get_dependencies()}.union(
+            {inner for outer in self.methods for inner in outer.get_dependencies()}
+        )
+
     def __str__(self) -> str:
         self.variables.sort(key=lambda x: x.name)
         self.methods.sort(key=lambda x: x.name)

@@ -5,36 +5,48 @@ from astroid import NodeNG, FunctionDef
 from data.SourceFile import SourceFile
 from data.SourceClass import SourceClass
 from data.SourceFunction import SourceFunction
+from data.SourceType import SourceType
 from data.SourceVariable import SourceVariable
 
 
-def annotation_to_string(node: NodeNG | None, string: str = '') -> str:
+def annotation_to_string(node: NodeNG | None) -> SourceType:
     """
     Generates a type string from annotation nodes.
 
     :param node: The root annotation node.
-    :param string: The parent string identifier for recursive parsing.
     :return: A human-readable type string.
     """
-    return_value = ''
+    string_annotation: str = ''
+    type_set: set[str] = set()
     if isinstance(node, astroid.Name):
-        return_value = node.name
+        string_annotation = node.name
+        type_set.add(node.name)
     elif isinstance(node, astroid.Subscript) and isinstance(node.value, astroid.Name):
         if isinstance(node.slice, astroid.Tuple):
-            return_value = node.value.name + \
-                           '[' + \
-                           ', '.join([annotation_to_string(child_node) for child_node in
-                                      node.slice.elts]) + \
-                           ']'
+            string_annotation = node.value.name + '['
+            for child_node in node.slice.elts:
+                inner_annotation = annotation_to_string(child_node)
+                string_annotation += str(inner_annotation) + ', '
+                type_set.update(inner_annotation.dependencies)
+            string_annotation = string_annotation[:-2]
+            string_annotation += ']'
         elif isinstance(node.slice, astroid.Attribute):
-            return_value = annotation_to_string(node.slice, node.value.name)
+            inner_annotation = annotation_to_string(node.slice)
+            string_annotation = node.value.name + '[' + str(inner_annotation) + ']'
+            type_set.update(inner_annotation.dependencies)
     elif isinstance(node, astroid.Attribute):
-        return_value = node.attrname
+        string_annotation = node.attrname
+        type_set.add(node.attrname)
     elif isinstance(node, astroid.Const):
-        return_value = str(node.value)
+        string_annotation = str(node.value)
+        type_set.add(str(node.value))
     elif isinstance(node, astroid.BinOp):
-        return_value = annotation_to_string(node.left) + ' | ' + annotation_to_string(node.right)
-    return (string + '[' if string else '') + return_value + (']' if string else '')
+        left = annotation_to_string(node.left)
+        right = annotation_to_string(node.right)
+        string_annotation = str(left) + ' | ' + str(right)
+        type_set.update(left.dependencies)
+        type_set.update(right.dependencies)
+    return SourceType(string_annotation, type_set)
 
 
 def get_function(node: FunctionDef) -> SourceFunction:
@@ -44,21 +56,21 @@ def get_function(node: FunctionDef) -> SourceFunction:
     :param node: The input node.
     :return: A source function.
     """
+    annotation = annotation_to_string(node.returns)
     function: SourceFunction = SourceFunction()
     function.name = node.name
-    function.returns = annotation_to_string(node.returns)
+    function.returns = annotation
     if node.decorators is not None:
         for decorator in node.decorators.nodes:
             if isinstance(decorator, astroid.Name) and \
                     decorator.name == 'staticmethod':
                 function.static = True
     for i, arg in enumerate(node.args.args):
+        annotation = annotation_to_string(node.args.annotations[i])
         function.params.append(
             SourceVariable(
                 arg.name,
-                annotation_to_string(
-                    node.args.annotations[i]
-                )
+                annotation
             )
         )
     return function
