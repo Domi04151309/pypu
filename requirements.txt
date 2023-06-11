@@ -1,4 +1,5 @@
 astroid
+requests
 mypy
 pylint
 pdoc
