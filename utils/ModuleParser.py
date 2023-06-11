@@ -22,9 +22,10 @@ def annotation_to_string(node: NodeNG | None, string: str = '') -> str:
     elif isinstance(node, astroid.Subscript) and isinstance(node.value, astroid.Name):
         if isinstance(node.slice, astroid.Tuple):
             return_value = node.value.name + \
-                '[' + \
-                ', '.join([annotation_to_string(child_node) for child_node in node.slice.elts]) + \
-                ']'
+                           '[' + \
+                           ', '.join([annotation_to_string(child_node) for child_node in
+                                      node.slice.elts]) + \
+                           ']'
         elif isinstance(node.slice, astroid.Attribute):
             return_value = annotation_to_string(node.slice, node.value.name)
     elif isinstance(node, astroid.Attribute):
@@ -89,9 +90,32 @@ def get_module_info(
                 for child_node in node.body:
                     if isinstance(child_node, FunctionDef):
                         new_class.methods.append(get_function(child_node))
+                        for child_child_node in child_node.body:
+                            if isinstance(child_child_node, astroid.AnnAssign) and \
+                                    isinstance(child_child_node.target, astroid.AssignAttr):
+                                print(child_child_node.target)
+                                new_class.variables.append(
+                                    SourceVariable(
+                                        child_child_node.target.attrname,
+                                        annotation_to_string(child_child_node.annotation)
+                                    )
+                                )
+                    elif isinstance(child_node, astroid.AnnAssign) and \
+                            isinstance(child_node.target, astroid.AssignName):
+                        new_class.variables.append(
+                            SourceVariable(
+                                child_node.target.name,
+                                annotation_to_string(child_node.annotation)
+                            )
+                        )
                 source_file.classes.append(new_class)
             elif isinstance(node, FunctionDef):
                 source_file.functions.append(get_function(node))
+            elif isinstance(node, astroid.AnnAssign) and \
+                    isinstance(node.target, astroid.AssignName):
+                source_file.variables.append(
+                    SourceVariable(node.target.name, annotation_to_string(node.annotation))
+                )
             elif isinstance(node, astroid.Import):
                 if with_dependencies:
                     for node_name in node.names:
