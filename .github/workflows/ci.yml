@@ -1,7 +1,11 @@
 name: Code Checks
+
 on:
   push:
     branches: [ main ]
+
+permissions:
+  contents: read
 
 jobs:
   code-checks:
@@ -30,9 +34,21 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: Lint
-        path: ./lint
+        path: ./lint/
     - name: Upload PDoc
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-pages-artifact@v1
       with:
-        name: PDoc
-        path: ./docs
+        path: ./docs/
+  deploy:
+    name: Deploy Documentation
+    needs: code-checks
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v2
