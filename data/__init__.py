@@ -1,3 +1,3 @@
 """
-.. include:: ./data.svg
+.. include:: ./uml.svg
 """
