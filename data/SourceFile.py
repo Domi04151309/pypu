@@ -33,6 +33,14 @@ class SourceFile:
                     dependencies.append(source_package + matching_module)
                     if matching_module in imports:
                         imports.remove(matching_module)
+        for item in self.classes:
+            source_package = self.name + '.' + item.name + ' --|> '
+            for base in item.bases:
+                matching_module: str | None = get_matching_module(self.imports, base)
+                if matching_module:
+                    dependencies.append(source_package + matching_module)
+                    if matching_module in imports:
+                        imports.remove(matching_module)
         return '\n'.join(dependencies +
                          [self.name + ' ..> ' + source_import for source_import in imports])
 

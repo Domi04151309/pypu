@@ -11,6 +11,7 @@ class SourceClass:
         self.name: str = ''
         self.variables: list[SourceVariable] = []
         self.methods: list[SourceFunction] = []
+        self.bases: list[str] = []
 
     def get_dependencies(self) -> set[str]:
         """

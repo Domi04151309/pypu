@@ -85,6 +85,7 @@ def get_class(node: ClassDef) -> SourceClass:
     """
     source_class: SourceClass = SourceClass()
     source_class.name = node.name
+    source_class.bases = [base.name for base in node.bases if isinstance(base, astroid.Name)]
     for child_node in node.body:
         if isinstance(child_node, FunctionDef):
             source_class.methods.append(get_function(child_node))
