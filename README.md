@@ -22,19 +22,19 @@ Now that the dependencies are installed, simply run the following command. Repla
 with the folder that you want to index and `output.puml` with the desired output location.
 
 ```bash
-python3 main.py --module=. > output.puml
+./main.py --module . > output.puml
 ```
 
 You can add an optional additional parameter to get a link to a rendered file.
 
 ```bash
-python3 main.py -m=. --link=svg
+./main.py -m . --link svg
 ```
 
 Alternatively, you can add an optional additional parameter to get the rendered file directly.
 
 ```bash
-python3 main.py -m=. --format=svg > output.svg
+./main.py -m . --format svg > output.svg
 ```
 
 ## Development

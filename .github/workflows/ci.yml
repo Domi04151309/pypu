@@ -30,8 +30,8 @@ jobs:
       run: mypy main.py --strict --any-exprs-report ./lint --lineprecision-report ./lint
     - name: Update Diagrams
       run: |
-        python3 main.py -m=./data/ -f=svg > ./data/uml.svg
-        python3 main.py -m=./utils/ -f=svg > ./utils/uml.svg
+        python3 main.py -m ./data/ -f svg > ./data/uml.svg
+        python3 main.py -m ./utils/ -f svg > ./utils/uml.svg
     - name: PDoc
       run: pdoc main.py utils data --favicon https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/code/default/48px.svg --logo https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/code/default/48px.svg -o ./docs
     - name: Upload Lint Results
