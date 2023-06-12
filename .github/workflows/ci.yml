@@ -27,13 +27,14 @@ jobs:
       run: pylint --recursive yes --ignore="__pycache__,venv,.mypy_cache" --output-format=text:lint/pylint.txt .
     - name: MyPy
       continue-on-error: true
-      run: mypy main.py --strict --any-exprs-report ./lint --lineprecision-report ./lint
+      run: mypy pypu.py --strict --any-exprs-report ./lint --lineprecision-report ./lint
     - name: Update Diagrams
       run: |
-        python3 main.py -m ./data/ -f svg > ./data/uml.svg
-        python3 main.py -m ./utils/ -f svg > ./utils/uml.svg
+        python3 pypu.py -m ./ -f svg > ./example.svg
+        python3 pypu.py -m ./data/ -f svg > ./data/uml.svg
+        python3 pypu.py -m ./utils/ -f svg > ./utils/uml.svg
     - name: PDoc
-      run: pdoc main.py utils data --favicon https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/code/default/48px.svg --logo https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/code/default/48px.svg -o ./docs
+      run: pdoc pypu.py utils data --favicon https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/code/default/48px.svg --logo https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/code/default/48px.svg -o ./docs
     - name: Upload Lint Results
       uses: actions/upload-artifact@v3
       with:

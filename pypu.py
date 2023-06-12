@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+"""
+.. include:: ./example.svg
+"""
 
 import argparse
 import os

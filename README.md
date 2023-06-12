@@ -22,19 +22,19 @@ Now that the dependencies are installed, simply run the following command. Repla
 with the folder that you want to index and `output.puml` with the desired output location.
 
 ```bash
-./main.py --module . > output.puml
+./pypu.py --module . > output.puml
 ```
 
 You can add an optional additional parameter to get a link to a rendered file.
 
 ```bash
-./main.py -m . --link svg
+./pypu.py -m . --link svg
 ```
 
 Alternatively, you can add an optional additional parameter to get the rendered file directly.
 
 ```bash
-./main.py -m . --format svg > output.svg
+./pypu.py -m . --format svg > output.svg
 ```
 
 ## Development
@@ -45,7 +45,7 @@ To access the automatically generated documentation, please utilize the
 following command.
 
 ```bash
-pdoc main.py utils data --favicon https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/code/default/48px.svg --logo https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/code/default/48px.svg
+pdoc pypu.py utils data --favicon https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/code/default/48px.svg --logo https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/code/default/48px.svg
 ```
 
 ### Class Diagrams
@@ -75,7 +75,7 @@ project files. MyPy analyzes the code and provides feedback on type
 inconsistencies, potential type errors, and other type-related issues.
 
 ```bash
-mypy main.py --strict
+mypy pypu.py --strict
 ```
 
 Static type checking helps catch errors and improve code quality by ensuring
