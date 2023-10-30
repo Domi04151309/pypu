@@ -6,10 +6,17 @@ class SourceVariable:
     Data class representing a python variable.
     """
 
-    def __init__(self, name: str, data_type: SourceType, static: bool = False) -> None:
+    def __init__(
+            self,
+            name: str,
+            data_type: SourceType,
+            static: bool = False,
+            default: str | None = None
+    ) -> None:
         self.static: bool = static
         self.name: str = name
         self.type: SourceType = data_type
+        self.default: str | None = default
 
     def get_dependencies(self) -> set[str]:
         """
@@ -22,4 +29,5 @@ class SourceVariable:
     def __str__(self) -> str:
         return ('{static}' if self.static else '') + \
             self.name + \
-            (': <color:MidnightBlue>' + str(self.type) + '</color>' if str(self.type) else '')
+            (': <color:MidnightBlue>' + str(self.type) + '</color>' if str(self.type) else '') + \
+            (' = ' + self.default if self.default else '')

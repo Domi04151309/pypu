@@ -67,10 +67,16 @@ def get_function(node: FunctionDef) -> SourceFunction:
                 function.static = True
     for i, arg in enumerate(node.args.args):
         annotation = annotation_to_type(node.args.annotations[i])
+        try:
+            default = str(node.args.default_value(arg.name).value)
+        except astroid.exceptions.NoDefault:
+            default = None
         function.params.append(
             SourceVariable(
                 arg.name,
-                annotation
+                annotation,
+                False,
+                default
             )
         )
     return function
