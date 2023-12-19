@@ -23,10 +23,8 @@ jobs:
         python3 -m pip install -U -r requirements.txt
         mkdir lint
     - name: PyLint
-      continue-on-error: true
       run: pylint --recursive yes --ignore="__pycache__,venv,.mypy_cache" --output-format=text:lint/pylint.txt .
     - name: MyPy
-      continue-on-error: true
       run: mypy pypu.py --strict --any-exprs-report ./lint --lineprecision-report ./lint
     - name: Update Diagrams
       run: |

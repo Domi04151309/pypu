@@ -71,6 +71,8 @@ def get_function(node: FunctionDef) -> SourceFunction:
             default = str(node.args.default_value(arg.name).value)
         except astroid.exceptions.NoDefault:
             default = None
+        except AttributeError:
+            default = None
         function.params.append(
             SourceVariable(
                 arg.name,
