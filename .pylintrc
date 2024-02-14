@@ -1,5 +1,46 @@
+[MAIN]
+fail-on=I
+
+check-quote-consistency=yes
+
+jobs=0
+
+recursive=yes
+
+load-plugins=pylint.extensions.broad_try_clause,
+             pylint.extensions.code_style,
+             pylint.extensions.comparison_placement,
+             pylint.extensions.confusing_elif,
+             pylint.extensions.for_any_all,
+             pylint.extensions.consider_refactoring_into_while_condition,
+             pylint.extensions.consider_ternary_expression,
+             pylint.extensions.bad_builtin,
+             pylint.extensions.mccabe,
+             pylint.extensions.dict_init_mutate,
+             pylint.extensions.docstyle,
+             pylint.extensions.dunder,
+             pylint.extensions.check_elif,
+             pylint.extensions.empty_comment,
+             pylint.extensions.eq_without_hash,
+             pylint.extensions.private_import,
+             pylint.extensions.redefined_variable_type,
+             pylint.extensions.no_self_use,
+             pylint.extensions.overlapping_exceptions,
+             pylint.extensions.docparams,
+             pylint.extensions.redefined_loop_name,
+             pylint.extensions.set_membership,
+             pylint.extensions.typing,
+             pylint.extensions.while_used,
+
+[REPORTS]
+score=no
+
+[BASIC]
+module-naming-style=any
+
 [MESSAGES CONTROL]
-# C0103: Naming convention violation
-# C0114: Missing module docstring
-# R0903: Too few public methods
-disable=C0103,C0114,R0903
+disable=missing-module-docstring,
+        too-few-public-methods,
+        docstring-first-line-empty,
+        consider-using-assignment-expr,
+        while-used,

@@ -61,7 +61,7 @@ potential issues in the code.
 To lint the entire repository, simply use the following command in a terminal:
 
 ```bash
-pylint --recursive yes --ignore="__pycache__,venv,.mypy_cache" --output-format=colorized .
+pylint --ignore="__pycache__,venv,.mypy_cache" --output-format=colorized .
 ```
 
 This command will recursively search through all subdirectories of the current
@@ -75,7 +75,7 @@ project files. MyPy analyzes the code and provides feedback on type
 inconsistencies, potential type errors, and other type-related issues.
 
 ```bash
-mypy pypu.py --strict
+mypy
 ```
 
 Static type checking helps catch errors and improve code quality by ensuring
