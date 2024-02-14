@@ -34,6 +34,7 @@ def annotation_to_type(node: NodeNG | None) -> SourceType:
             inner_annotation = annotation_to_type(node.slice)
             string_annotation = node.value.name + '[' + str(inner_annotation) + ']'
             type_set.update(inner_annotation.dependencies)
+    # pylint:disable-next=confusing-consecutive-elif
     elif isinstance(node, astroid.Attribute):
         string_annotation = node.attrname
         type_set.add(node.attrname)
@@ -118,6 +119,7 @@ def get_class(node: ClassDef) -> SourceClass:
     return source_class
 
 
+# pylint:disable-next=too-complex
 def get_module_info(
         root: str,
         file_path: str,
@@ -133,33 +135,31 @@ def get_module_info(
     :param with_external_dependencies: Whether external dependencies should be included.
     :return: A matching source file.
     """
-    try:
-        module = astroid.MANAGER.ast_from_file(file_path)
-        path_modules = file_path[len(root):].split('.')[-2].split(os.sep)
-        source_file = SourceFile()
-        source_file.name = '.'.join(path_modules)
+    module = astroid.MANAGER.ast_from_file(file_path)
+    path_modules = file_path[len(root):].split('.')[-2].split(os.sep)
+    source_file = SourceFile()
+    source_file.name = '.'.join(path_modules)
 
-        for node in module.body:
-            if isinstance(node, astroid.ClassDef):
-                source_file.classes.append(get_class(node))
-            elif isinstance(node, FunctionDef):
-                source_file.functions.append(get_function(node))
-            elif isinstance(node, astroid.AnnAssign) and \
-                    isinstance(node.target, astroid.AssignName):
-                source_file.variables.append(
-                    SourceVariable(node.target.name, annotation_to_type(node.annotation))
-                )
-            elif isinstance(node, astroid.Import):
-                if with_external_dependencies:
-                    for node_name in node.names:
-                        source_file.imports.append(node_name[0])
-            elif isinstance(node, astroid.ImportFrom):
-                if node.level == 1 or node.modname in known_modules or with_external_dependencies:
-                    for node_name in node.names:
-                        source_file.imports.append(
-                            ('.'.join(path_modules[:-1]) + '.' if node.level == 1 else '') +
-                            node.modname + '.' + node_name[0]
-                        )
-        return source_file
-    except astroid.AstroidBuildingException:
-        return SourceFile()
+    for node in module.body:
+        if isinstance(node, astroid.ClassDef):
+            source_file.classes.append(get_class(node))
+        elif isinstance(node, FunctionDef):
+            source_file.functions.append(get_function(node))
+        elif isinstance(node, astroid.AnnAssign) and \
+                isinstance(node.target, astroid.AssignName):
+            source_file.variables.append(
+                SourceVariable(node.target.name, annotation_to_type(node.annotation))
+            )
+        elif isinstance(node, astroid.Import):
+            if with_external_dependencies:
+                for node_name in node.names:
+                    source_file.imports.append(node_name[0])
+        # pylint:disable-next=confusing-consecutive-elif
+        elif isinstance(node, astroid.ImportFrom):
+            if node.level == 1 or node.modname in known_modules or with_external_dependencies:
+                for node_name in node.names:
+                    source_file.imports.append(
+                        ('.'.join(path_modules[:-1]) + '.' if node.level == 1 else '') +
+                        node.modname + '.' + node_name[0]
+                    )
+    return source_file
