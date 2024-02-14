@@ -43,7 +43,7 @@ class SourceClass:
             ' {\n' + \
             '\n__\n'.join([
                 x
-                for x in [static_variables, instance_variables, static_methods, instance_methods]
+                for x in (static_variables, instance_variables, static_methods, instance_methods)
                 if x
             ]) + \
             '\n}'
