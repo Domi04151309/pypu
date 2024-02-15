@@ -1,4 +1,8 @@
 [MAIN]
+ignore-paths=__pycache__,
+             venv,
+             .mypy_cache,
+
 fail-on=I
 
 check-quote-consistency=yes

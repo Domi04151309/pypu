@@ -30,7 +30,7 @@ jobs:
       - name: Run
         run: |
           echo -e "\n\`\`\`\n" >> $GITHUB_STEP_SUMMARY
-          pylint --ignore="=~,__pycache__,venv,.mypy_cache" . >> $GITHUB_STEP_SUMMARY
+          pylint . >> $GITHUB_STEP_SUMMARY
           echo -e "\n\`\`\`\n" >> $GITHUB_STEP_SUMMARY
   mypy:
     name: MyPy

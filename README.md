@@ -61,7 +61,7 @@ potential issues in the code.
 To lint the entire repository, simply use the following command in a terminal:
 
 ```bash
-pylint --ignore="__pycache__,venv,.mypy_cache" --output-format=colorized .
+pylint --output-format=colorized .
 ```
 
 This command will recursively search through all subdirectories of the current
